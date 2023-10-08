@@ -1,21 +1,16 @@
-import matr_rgb
 import os
+import cv2
+import numpy as np
 
 PATH = os.getcwd()
 PATH_DATA_IN = os.path.join(PATH, 'data_in')
-NAME_FILE = os.listdir(PATH_DATA_IN)[0]
-
-# matrix from image conversion
-image_pix_data = matr_rgb.img_convert(os.path.join(PATH_DATA_IN, NAME_FILE))
-
-# matrix processing
-image_matrix = []
-for i in range(0, len(image_pix_data)):
-    row = []
-    for j in range(0, len(image_pix_data[i])):
-        row.append(image_pix_data[i][j][0])
-    image_matrix.append(row)
+NAME_FILE = os.listdir(PATH_DATA_IN)[1]
 
 
-# image from matrix conversion
-matr_rgb.matr_convert(image_matrix)
+image = cv2.imread(os.path.join(PATH_DATA_IN, NAME_FILE))
+cv2.fastNlMeansDenoisingColored(image, None, 10, 10, 7, 21)
+
+for i in range(0, 22):
+    buffer = cv2.applyColorMap(image, i)
+    buffer = cv2.GaussianBlur(buffer, (2, 2), cv2.BORDER_DEFAULT)
+    cv2.imwrite('images_out\\image'+str(i)+'.png', buffer)
